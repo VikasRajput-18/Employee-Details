@@ -113,19 +113,17 @@ export default function DataTable() {
       </Container>
 
       <Container>
-              <h1 className="text-center text-success my-5">Managers </h1>
+        <h1 className="text-center text-success my-5">Managers </h1>
         {uniqueManagerID.map((manager, i) => {
           return (
             <div key={i}>
-              <div>
-                <h4
-                  className="text-dark text-center bg-secondary text-white  py-3 rounded"
-                  onClick={getManagerID}
-                  style={{ cursor: "pointer" }}
-                >
-                  Manager : {manager}
-                </h4>
-              </div>
+              <h4
+                className="text-dark text-center bg-secondary text-white  py-3 rounded"
+                onClick={getManagerID}
+                style={{ cursor: "pointer" }}
+              >
+                Manager : {manager}
+              </h4>
 
               <div>
                 {managerID?.map((manager, id) => {
