@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import { Container, Table } from "react-bootstrap";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const columns = [
   { field: "id", headerName: "ID", width: 100 },
@@ -49,7 +54,7 @@ export default function DataTable() {
   const [emplyeeData, setEmployeeData] = useState([]);
   const [search, setSearch] = useState("");
   const [managerID, setManagerID] = useState([]);
-
+  const [managers, setManagers] = useState([]);
   useEffect(() => {
     const url =
       "https://opensheet.elk.sh/1gH5Kle-styszcHF2G0H8l1w1nDt1RhO9NHNCpHhKK0M/employees";
@@ -79,14 +84,23 @@ export default function DataTable() {
 
   const uniqueManagerID = [...new Set(managerId)];
 
-  const getManagerID = (e) => {
-    let getID = e.target.textContent.split(" ")[2];
-    emplyeeData.map((emp) => {
-      if (emp.manager_id === getID) {
-        setManagerID((prev) => [...prev, emp]);
+  const getManagerID = (id) => {
+    let selected = emplyeeData[id],
+      length = emplyeeData.length,
+      selectedManagerId = selected.manager_id,
+      emplyeeList = [];
+
+    let i = 0;
+
+    for (; i < length; i++) {
+      if (selectedManagerId === (emplyeeData[i] || {}).manager_id) {
+        emplyeeList.push(emplyeeData[i]);
       }
-    });
+
+      setManagers(emplyeeList);
+    }
   };
+
 
   let uni = managerID.map((man) => man.manager_id);
   uni = [...new Set(uni)];
@@ -112,66 +126,75 @@ export default function DataTable() {
         </div>
       </Container>
 
-      <Container>
-        <h1 className="text-center text-success my-5">Managers </h1>
-        {uniqueManagerID.map((manager, i) => {
-          return (
-            <div key={i}>
-              <h4
-                className="text-dark text-center bg-secondary text-white  py-3 rounded"
-                onClick={getManagerID}
-                style={{ cursor: "pointer" }}
-              >
-                Manager : {manager}
-              </h4>
-
-              <div>
-                {managerID?.map((manager, id) => {
-                  return (
-                    <Table key={id}>
-                      <thead className="table-info">
-                        <tr>
-                          <th>Field</th>
-                          <th>Value</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="table-success">
-                          <td>First Name</td>
-                          <td>{manager?.first_name}</td>
-                        </tr>
-                        <tr className="table-light">
-                          <td>Last Name</td>
-                          <td>{manager?.last_name}</td>
-                        </tr>
-                        <tr className="table-warning">
-                          <td>Date of Birth</td>
-                          <td>{manager?.date_of_birth}</td>
-                        </tr>
-                        <tr className="table-info">
-                          <td>Address</td>
-                          <td>{manager?.address}</td>
-                        </tr>
-                        <tr className="table-danger">
-                          <td>Date of Joining</td>
-                          <td>{manager?.date_of_joining}</td>
-                        </tr>
-                        <tr className="table-primary">
-                          <td>Salary</td>
-                          <td>${manager?.salary}</td>
-                        </tr>
-                        <tr className="table-secondary">
-                          <td>Designation</td>
-                          <td>{manager?.designation}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+      <Container className="my-5">
+        <h1
+          className="text-center text-white bg-danger"
+          style={{ color: "#333" }}
+        >
+          Managers
+        </h1>
+        <div>
+          {uniqueManagerID.map((manID, i) => {
+            return (
+              <Accordion key={i}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1d-content"
+                  id="panel1d-header"
+                  onClick={() => getManagerID(i)}
+                >
+                  <Typography>Manager : {manID}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {managers.map((manager, i) => {
+                    return (
+                      <div key={i}>
+                        <Table>
+                          <thead className="table-info">
+                            <tr>
+                              <th>Field</th>
+                              <th>Value</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="table-success">
+                              <td>First Name</td>
+                              <td>{manager?.first_name}</td>
+                            </tr>
+                            <tr className="table-light">
+                              <td>Last Name</td>
+                              <td>{manager?.last_name}</td>
+                            </tr>
+                            <tr className="table-warning">
+                              <td>Date of Birth</td>
+                              <td>{manager?.date_of_birth}</td>
+                            </tr>
+                            <tr className="table-info">
+                              <td>Address</td>
+                              <td>{manager?.address}</td>
+                            </tr>
+                            <tr className="table-danger">
+                              <td>Date of Joining</td>
+                              <td>{manager?.date_of_joining}</td>
+                            </tr>
+                            <tr className="table-primary">
+                              <td>Salary</td>
+                              <td>${manager?.salary}</td>
+                            </tr>
+                            <tr className="table-secondary">
+                              <td>Designation</td>
+                              <td>{manager?.designation}</td>
+                            </tr>
+                          </tbody>
+                        </Table>
+                      </div>
+                    );
+                  })}
+                </AccordionDetails>
+              </Accordion>
+            );
+          })}
+        </div>
       </Container>
     </>
   );
